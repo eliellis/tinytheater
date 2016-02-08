@@ -1,0 +1,21 @@
+{
+  "name": "tv-api",
+  "version": "0.0.1",
+  "description": "A promised-based television show API client. Makes use of the late popcorn-time televsion show hosted in various places.",
+  "main": "tv-api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "television",
+    "torrent",
+    "shows",
+    "popcorn-time"
+  ],
+  "author": "Elijah Ellis",
+  "license": "MIT",
+  "dependencies": {
+    "q": "^1.4.1",
+    "superagent": "^1.7.1"
+  }
+}

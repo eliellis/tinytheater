@@ -1,0 +1,21 @@
+{
+  "name": "yts-api",
+  "version": "0.0.2",
+  "description": "A promise-based YTS movie client.",
+  "main": "yts-api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yts",
+    "torrent",
+    "movies"
+  ],
+  "author": "Elijah Ellis",
+  "license": "MIT",
+  "dependencies": {
+    "q": "^1.4.1",
+    "superagent": "^1.7.1"
+  },
+  "devDependencies": {}
+}
