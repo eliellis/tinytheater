@@ -180,7 +180,8 @@ client.on('torrent', (torrent) => {
       default: 0
     }
   ], function(answer){
-    var s = server.createServer(vids[answer.file]);
+    var f = Object.keys(answer).length == 0 ? 0 : answer.file;
+    var s = server.createServer(vids[f]);
     s.listen(() => {
       console.log()
       var port = s.address().port;
@@ -195,6 +196,7 @@ client.on('torrent', (torrent) => {
           ui.updateBottomBar(`${Math.floor(100 * torrent.progress)}% downloaded at ${humanize.filesize(torrent.downloadSpeed())}/s`);
           if (buffered == false)
           {
+            openUrl(`http://localhost:${port}`);
             buffered = true;
           }
         }
