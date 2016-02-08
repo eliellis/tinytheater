@@ -1,6 +1,6 @@
 {
   "name": "tinytheater",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Watch torrents as fast as possible.",
   "main": "index.js",
   "scripts": {
@@ -38,5 +38,13 @@
     "vlc": "0.0.4",
     "webtorrent": "^0.71.3"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliellis/tinytheater.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eliellis/tinytheater/issues"
+  },
+  "homepage": "https://github.com/eliellis/tinytheater#readme"
 }
