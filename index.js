@@ -4,13 +4,10 @@ const yts = require('./lib/yts-api/yts-api.js');
 const tv = require('./lib/tv-api/tv-api.js');
 
 const humanize = require('humanize');
-const keypress = require('keypress');
 const openUrl = require('open');
 const request = require('request');
-const toascii = require('image-to-ascii');
 const inquirer = require('inquirer');
 const clivas = require('clivas');
-const strike = require('strike-api');
 const omdb = require('omdb');
 const program = require('commander');
 const readline = require('readline');
@@ -32,6 +29,7 @@ program
 
 process.on('SIGINT', () => {
   client.destroy();
+  process.exit(0);
 });
 
 var ui = new inquirer.ui.BottomBar();
@@ -221,27 +219,13 @@ var printShow = function printShow(show)
 
 var printMovie = function printMovie(movie)
 {
-  if (movie.poster)
-  {
-    toascii({path: movie.poster, size: { height: "50%" }}, function(err, response){
-      console.log(err || response);
-      printInfo();
-    });
+  clivas.clear();
+  clivas.line(`{gray+bold:${movie.title}}`);
+  if (movie.tomato) {
+    clivas.line(`{red+bold:Rotten Tomatoes Score: ${movie.tomato.meter}%}`);
+    clivas.line(`{red+bold:Rotten Tomatoes User Score: ${movie.tomato.userMeter}%}`);
   }
-  else
-  {
-    printInfo();
-  }
-
-  var printInfo = () => {
-    clivas.clear();
-    clivas.line(`{gray+bold:${movie.title}}`);
-    if (movie.tomato) {
-      clivas.line(`{red+bold:Rotten Tomatoes Score: ${movie.tomato.meter}%}`);
-      clivas.line(`{red+bold:Rotten Tomatoes User Score: ${movie.tomato.userMeter}%}`);
-    }
-    clivas.line(`{gray:${movie.plot}}`);
-  };
+  clivas.line(`{gray:${movie.plot}}`);
 }
 
 
