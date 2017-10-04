@@ -12,6 +12,7 @@ const imdb = require('imdb-api');
 const program = require('commander');
 const readline = require('readline');
 const parseTorrent = require('parse-torrent');
+const fs = require('fs');
 const WebTorrent = require('webtorrent');
 
 var buffered = false;
@@ -47,14 +48,15 @@ process.on('SIGINT', () => {
 
 var ui = new inquirer.ui.BottomBar();
 
+const apiKey = program.apiKey ? program.apiKey : require('./config.js').apiKey;
+
 if (program.movie)
 {
   imdb
-  .get(program.movie, { apiKey: program.apiKey })
+  .get(program.movie, { apiKey })
   .then((movie) => {
     clivas.clear();
     printMovie(movie);
-
     yts.listMovies({query_term: movie.title}).then((res) => {
 
       var allTorrents = res.data.movies[0].torrents;
@@ -90,7 +92,7 @@ if (program.movie)
 else if (program.television)
 {
   imdb
-  .get(program.television, { apiKey: program.apiKey })
+  .get(program.television, { apiKey })
   .then((show) => {
         clivas.clear();
         printShow(show);
