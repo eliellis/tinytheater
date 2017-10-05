@@ -5,16 +5,22 @@ A CLI for watching television shows and movies.
 ## Usage
 ### As of 2017, you will need to provide an OMDB api-key in order for tinytheater to retrieve any movie / television information.
 ```
-  Usage: tinytheater [options] --api-key <OMDB Api Key>
+  Usage: tinytheater <command>
 
 
   Options:
 
-    -V, --version            output the version number
-    --api-key [key]          API key for Open Movie Database.
-    -m, --movie [name]       Search for a movie by its title.
-    -t, --television [name]  Search for a television series by its title.
-    -l, --link [torrent]     Stream torrent.
-    -v, --verbose            Print everything that's going on.
-    -h, --help               output usage information
+    -V, --version    output the version number
+    --api-key [key]  API key for Open Movie Database.
+    -h, --help       output usage information
+
+
+  Commands:
+
+    movie <name>          Search for a movie by its title.
+    television|tv <name>  Search for a series by its title.
+    link|l <name>         Just add a magnet link.
+    apikey|api <key>      Sets and saves your OMDB api key.
+
+
 ```
