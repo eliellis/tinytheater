@@ -3,16 +3,14 @@ const server = require('./lib/server.js');
 const yts = require('./lib/yts-api/yts-api.js');
 const tv = require('./lib/tv-api/tv-api.js');
 
+const jsonfile = require('jsonfile');
 const humanize = require('humanize');
 const openUrl = require('open');
-const request = require('request');
 const inquirer = require('inquirer');
 const clivas = require('clivas');
 const imdb = require('imdb-api');
 const program = require('commander');
-const readline = require('readline');
 const parseTorrent = require('parse-torrent');
-const fs = require('fs');
 const WebTorrent = require('webtorrent');
 
 var buffered = false;
@@ -30,30 +28,23 @@ const BUFFERING_SIZE = 10 * 1024 * 1024;
 const client = new WebTorrent({
   maxConns: 500,
 });
+const ui = new inquirer.ui.BottomBar();
+const config = jsonfile.readFileSync('config.json', { throws: false });
+const apiKey = program.apiKey ? 
+                program.apiKey 
+                : config === null ? '' : config.apiKey;
 
 program
 .version('0.0.1')
-.usage('tinytheater [options] --api-key <OMDB Api Key>')
-.option('--api-key [key]', 'API key for Open Movie Database.')
-.option('-m, --movie [name]', 'Search for a movie by its title.')
-.option('-t, --television [name]', 'Search for a television series by its title.')
-.option('-l, --link [torrent]', 'Stream torrent.')
-.option('-v, --verbose', 'Print everything that\'s going on.')
-.parse(process.argv);
+.usage('tinytheater <command>')
+.option('--api-key [key]', 'API key for Open Movie Database.');
 
-process.on('SIGINT', () => {
-  client.destroy();
-  process.exit(0);
-});
-
-var ui = new inquirer.ui.BottomBar();
-
-const apiKey = program.apiKey ? program.apiKey : require('./config.js').apiKey;
-
-if (program.movie)
-{
+program
+.command('movie <name>')
+.description('Search for a movie by its title.')
+.action(name => {
   imdb
-  .get(program.movie, { apiKey })
+  .get(name, { apiKey })
   .then((movie) => {
     clivas.clear();
     printMovie(movie);
@@ -75,7 +66,7 @@ if (program.movie)
       ]).then(function(answer){
         if (answer.trailer) {
           var trailer = res.data.movies[0].yt_trailer_code;
-          openUrl(`http://youtube.com/watch?v=${trailer}`)
+          openUrl(`http://youtube.com/watch?v=${trailer}`);
         }
         magnet = parseTorrent.toMagnetURI({
           infoHash: allTorrents[answer.torrent].hash,
@@ -88,11 +79,15 @@ if (program.movie)
         
     });
   }).catch(err => clivas.line(err));
-}
-else if (program.television)
-{
+});
+
+program
+.command('television <name>')
+.alias('tv')
+.description('Search for a series by its title.')
+.action(name => {
   imdb
-  .get(program.television, { apiKey })
+  .get(name, { apiKey })
   .then((show) => {
         clivas.clear();
         printShow(show);
@@ -120,7 +115,7 @@ else if (program.television)
               message: 'Which season would you like to stream?',
               choices: (answers) => {
                 var seasons = [];
-                for (key of Object.keys(seasonsList))
+                for (let key of Object.keys(seasonsList))
                 {
                   seasons.push({ name: `Season ${key}`, value: key });
                 }
@@ -148,9 +143,9 @@ else if (program.television)
                 var torrents = [];
                 var i = 0;
 
-                for (key of Object.keys(seasonsList[answers.season][answers.episode].torrents)) {
+                for (let key of Object.keys(seasonsList[answers.season][answers.episode].torrents)) {
                   torrents.push({ name: `${key}`, value: key});
-                  i++
+                  i++;
                 }
 
                 torrents.splice(0, 1);
@@ -165,17 +160,42 @@ else if (program.television)
             if (answers.torrent) torrent = answers.torrent;
             client.add(seasonsList[answers.season][answers.episode].torrents[torrent].url);
           });
-        })
+        });
     }).catch(err => clivas.line(err));
-}
-else if (program.link)
-{
-  client.add(program.link);
-}
+});
+
+program
+.command('link <name>')
+.alias('l')
+.description('Just add a magnet link.')
+.action(link => {
+  client.add(link);
+});
+
+program.command('apikey <key>')
+.alias('api')
+.description('Sets and saves your OMDB api key.')
+.action(key => {
+  if (key.length > 0) {
+    jsonfile.writeFile('config.json', { apiKey: key }, err => {
+      if (!err) {
+        clivas.line('Saved your api-key!');
+        process.emit('SIGINT');
+      }
+    });
+  }
+});
+
+program.parse(process.argv);
+
+process.on('SIGINT', () => {
+  client.destroy();
+  process.exit(0);
+});
 
 client.on('error', err => {
-  console.log(err);
-})
+  clivas.line(err);
+});
 
 client.on('torrent', (torrent) => {
   var vids = server.findMovieInTorrent(torrent.files);
@@ -187,7 +207,7 @@ client.on('torrent', (torrent) => {
       message: 'Which file would you like to stream?',
       choices: function() {
         return vids.map((file, i) => {
-          return { name: file.name, value: i }
+          return { name: file.name, value: i };
         });
       },
       when: function() {
@@ -199,7 +219,7 @@ client.on('torrent', (torrent) => {
   ]).then(function(answer) {
     var f = Object.keys(answer).length == 0 ? 0 : answer.file;
     var s = server.createServer(vids[f]);
-    s.listen(() => {
+    s.on('listening', () => {
       var port = s.address().port;
 
       clivas.line(`{underline+bold:Serving movie at http://localhost:${port}}`);
@@ -231,9 +251,9 @@ var printShow = function printShow(show)
   clivas.line(`{gray+bold:${show.title}}`);
   show.ratings.forEach((rating) => {
     clivas.line(`{yellow:${ rating.Source } rating: ${ rating.Value }}`);
-  })
+  });
   clivas.line(`{gray:${show.plot}}`);
-}
+};
 
 
 
@@ -246,6 +266,6 @@ var printMovie = function printMovie(movie)
     clivas.line(`{red+bold:Rotten Tomatoes User Score: ${movie.tomato.userMeter}%}`);
   }
   clivas.line(`{gray:${movie.plot}}`);
-}
+};
 
 
