@@ -1,5 +1,5 @@
 # tinytheater
-A CLI interface for watching television shows and movies.
+A CLI for watching television shows and movies.
 ## Installation
 `npm install tinytheater`
 ## Usage
