@@ -1,6 +1,6 @@
 {
   "name": "yts-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A promise-based YTS movie client.",
   "main": "yts-api.js",
   "scripts": {
@@ -14,7 +14,6 @@
   "author": "Elijah Ellis",
   "license": "MIT",
   "dependencies": {
-    "q": "^1.5.0",
     "superagent": "^3.6.3"
   },
   "devDependencies": {}

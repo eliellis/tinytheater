@@ -1,6 +1,6 @@
 {
   "name": "tinytheater",
-  "version": "0.0.7",
+  "version": "0.0.11",
   "description": "Watch torrents as fast as possible.",
   "main": "index.js",
   "scripts": {

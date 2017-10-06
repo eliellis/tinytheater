@@ -36,7 +36,7 @@ const apiKey = program.apiKey ?
 
 program
 .version('0.0.1')
-.usage('tinytheater <command>')
+.usage('<command>')
 .option('--api-key [key]', 'API key for Open Movie Database.');
 
 program

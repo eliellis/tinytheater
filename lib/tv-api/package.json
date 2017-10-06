@@ -1,6 +1,6 @@
 {
   "name": "tv-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A promised-based television show API client. Makes use of the late popcorn-time televsion show hosted in various places.",
   "main": "tv-api.js",
   "scripts": {
@@ -15,7 +15,7 @@
   "author": "Elijah Ellis",
   "license": "MIT",
   "dependencies": {
-    "q": "^1.5.0",
     "superagent": "^3.6.3"
-  }
+  },
+  "devDependencies": {}
 }
