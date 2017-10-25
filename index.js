@@ -1,50 +1,38 @@
 #!/usr/bin/env node
 const server = require('./lib/server.js');
+const config = require('./lib/config.js');
 const yts = require('./lib/yts-api/yts-api.js');
 const tv = require('./lib/tv-api/tv-api.js');
-
-const jsonfile = require('jsonfile');
+const debug = require('debug')('main');
 const humanize = require('humanize');
-const openUrl = require('open');
 const inquirer = require('inquirer');
+inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 const clivas = require('clivas');
 const imdb = require('imdb-api');
 const program = require('commander');
 const parseTorrent = require('parse-torrent');
 const WebTorrent = require('webtorrent');
+const img2ascii = require('image-to-ascii');
 
 var buffered = false;
-const TRACKERS_LIST = [
-  'udp://open.demonii.com:1337/announce',
-  'udp://tracker.openbittorrent.com:80',
-  'udp://tracker.coppersurfer.tk:6969',
-  'udp://glotorrents.pw:6969/announce',
-  'udp://tracker.opentrackr.org:1337/announce',
-  'udp://torrent.gresille.org:80/announce',
-  'udp://p4p.arenabg.com:1337',
-  'udp://tracker.leechers-paradise.org:6969'
-];
+const TRACKERS_LIST = config.get('trackers');
 const BUFFERING_SIZE = 10 * 1024 * 1024;
 const client = new WebTorrent({
   maxConns: 500,
 });
 const ui = new inquirer.ui.BottomBar();
-const config = jsonfile.readFileSync('config.json', { throws: false });
 const apiKey = program.apiKey ? 
                 program.apiKey 
-                : config === null ? '' : config.apiKey;
+                : config.get('apiKey') === null ? '' : config.get('apiKey');
 
 program
 .version('0.0.1')
 .usage('<command>')
 .option('--api-key [key]', 'API key for Open Movie Database.');
 
-program
-.command('movie <name>')
-.description('Search for a movie by its title.')
-.action(name => {
+function movieQuestionarreHandler(req) {
   imdb
-  .get(name, { apiKey })
+  .getReq(Object.assign(req, { opts: {apiKey} }))
   .then((movie) => {
     clivas.clear();
     printMovie(movie);
@@ -79,15 +67,17 @@ program
         
     });
   }).catch(err => clivas.line(err));
+}
+program
+.command('movie <name>')
+.description('Search for a movie by its title.')
+.action(name => {
+  movieQuestionarreHandler({ name });
 });
 
-program
-.command('television <name>')
-.alias('tv')
-.description('Search for a series by its title.')
-.action(name => {
+function seriesQuestionnareHandler(req) {
   imdb
-  .get(name, { apiKey })
+  .getReq(Object.assign(req, { opts: { apiKey } }))
   .then((show) => {
         clivas.clear();
         printShow(show);
@@ -137,7 +127,7 @@ program
               name: 'torrent',
               message: 'Which torrent would you like to stream?',
               when: (answers) => {
-                return Object.keys(seasonsList[answers.season][answers.episode].torrents).length > 2;
+                return Object.keys(seasonsList[answers.season][answers.episode].torrents).length > 1;
               },
               choices: (answers) => {
                 var torrents = [];
@@ -162,6 +152,45 @@ program
           });
         });
     }).catch(err => clivas.line(err));
+}
+program
+.command('television <name>')
+.alias('tv')
+.description('Search for a series by its title.')
+.action(name => {
+  seriesQuestionnareHandler({ name });
+});
+
+program
+.command('search [term]')
+.alias('s')
+.description('Begin interactive session.')
+.action((term) => {
+  inquirer.prompt([{
+    type: 'autocomplete',
+    name: 'title',
+    message: 'Search for a show or movie',
+    source: function(answersSoFar, input) {
+      return new Promise((resolve, reject) => {
+        imdb.search({ title: input || '' }, { apiKey }).then((res) => {
+          let list = res.results.map((result) => { return { name: `${ result.title } | ${ result.type } | ${ result.year }`, value: result }; });
+          if (list.length > 0) {
+            resolve(list);
+          }
+          else {
+            resolve([]);
+          }
+        }).catch(err => resolve([]));
+      });
+    }
+  }]).then(function(answers) {
+    if (answers.title.type === 'movie') {
+      movieQuestionarreHandler({ id: answers.title.imdbid });
+    }
+    else if (answers.title.type === 'series') {
+      seriesQuestionnareHandler({ id: answers.title.imdbid });
+    }
+  }).catch(err => console.log(err));
 });
 
 program
@@ -175,15 +204,11 @@ program
 program.command('apikey <key>')
 .alias('api')
 .description('Sets and saves your OMDB api key.')
-.action(key => {
-  if (key.length > 0) {
-    jsonfile.writeFile('config.json', { apiKey: key }, err => {
-      if (!err) {
-        clivas.line('Saved your api-key!');
-        process.emit('SIGINT');
-      }
-    });
-  }
+.action(value => {
+  config.set('apiKey', value).then(() => { 
+    clivas.line('Saved API key.');
+    process.emit('SIGINT');
+  });
 });
 
 program.parse(process.argv);
@@ -217,22 +242,24 @@ client.on('torrent', (torrent) => {
       default: 0
     }
   ]).then(function(answer) {
+    debug('creating server...');
+
     var f = Object.keys(answer).length == 0 ? 0 : answer.file;
     var s = server.createServer(vids[f]);
     s.on('listening', () => {
       var port = s.address().port;
+      clivas.line(`{underline+bold:Serving movie at http://localhost:${ port }}`);
 
-      clivas.line(`{underline+bold:Serving movie at http://localhost:${port}}`);
-
+      debug('torrent downloading...');
       torrent.on('download', (chunk) => {
         var buffered_percent = torrent.downloaded / (torrent.length / 100);
+        avgSpeed(torrent.downloadSpeed);
         ui.updateBottomBar(`Buffering... ${Math.floor(buffered_percent)}%`);
         if (buffered_percent >= 20)
         {
-          ui.updateBottomBar(`${ Math.floor(100 * torrent.progress) }% downloaded at ${ humanize.filesize(torrent.downloadSpeed) }/s`);
+          ui.updateBottomBar(`${ Math.floor(100 * torrent.progress) }% downloaded at ${ humanize.filesize(avgSpeed(torrent.downloadSpeed)) }/s`);
           if (buffered == false)
           {
-            openUrl(`http://localhost:${port}`);
             buffered = true;
           }
         }
@@ -244,11 +271,22 @@ client.on('torrent', (torrent) => {
   
 });
 
+let speedBuffer = Array();
+let avgSpeed = (speed) => {
+  debug('average speed %o', speedBuffer);
+  if (speedBuffer.length < 11) {
+    speedBuffer.push(speed);
+  }
+  speedBuffer.splice(0, 1);
+  speedBuffer.push(speed);
+  return speedBuffer.reduce((a, b) => (a + b) / 2);
+};
 
 var printShow = function printShow(show)
 {
+  debug('printing show info for %o', show.title);
   clivas.clear();
-  clivas.line(`{gray+bold:${show.title}}`);
+  clivas.line(`{gray+bold:${ show.title }}`);
   show.ratings.forEach((rating) => {
     clivas.line(`{yellow:${ rating.Source } rating: ${ rating.Value }}`);
   });
@@ -259,11 +297,12 @@ var printShow = function printShow(show)
 
 var printMovie = function printMovie(movie)
 {
+  debug('printing movie info for movie %o', movie.title);
   clivas.clear();
-  clivas.line(`{gray+bold:${movie.title}}`);
+  clivas.line(`{gray+bold:${ movie.title }}`);
   if (movie.tomato) {
-    clivas.line(`{red+bold:Rotten Tomatoes Score: ${movie.tomato.meter}%}`);
-    clivas.line(`{red+bold:Rotten Tomatoes User Score: ${movie.tomato.userMeter}%}`);
+    clivas.line(`{red+bold:Rotten Tomatoes Score: ${ movie.tomato.meter }%}`);
+    clivas.line(`{red+bold:Rotten Tomatoes User Score: ${ movie.tomato.userMeter }%}`);
   }
   clivas.line(`{gray:${movie.plot}}`);
 };
