@@ -813,9 +813,9 @@ image-parser@^1.0.0:
     noop6 "^1.0.4"
     pixel-class "^1.0.0"
 
-image-to-ascii:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/image-to-ascii/-/image-to-ascii-3.0.8.tgz#83e1110f5383c9b65f01da5e36270e0c505e89c5"
+image-to-ascii@^3.0.8:
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/image-to-ascii/-/image-to-ascii-3.0.12.tgz#f67f0d9597f755f4c8d95087473316934467ae00"
   dependencies:
     asciify-pixel-matrix "^1.0.0"
     compute-size "^1.0.1"
