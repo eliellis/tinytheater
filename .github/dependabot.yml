@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: commander
+    versions:
+    - 7.0.0
+    - 7.1.0
+  - dependency-name: parse-torrent
+    versions:
+    - 9.1.1
+  - dependency-name: mime
+    versions:
+    - 2.5.0
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
