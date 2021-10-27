@@ -814,8 +814,8 @@ image-parser@^1.0.0:
     pixel-class "^1.0.0"
 
 image-to-ascii@^3.0.8:
-  version "3.0.12"
-  resolved "https://registry.yarnpkg.com/image-to-ascii/-/image-to-ascii-3.0.12.tgz#f67f0d9597f755f4c8d95087473316934467ae00"
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/image-to-ascii/-/image-to-ascii-3.0.13.tgz#fe55065605b6cd2d05ecaf3626051a2c9f240c5b"
   dependencies:
     asciify-pixel-matrix "^1.0.0"
     compute-size "^1.0.1"
