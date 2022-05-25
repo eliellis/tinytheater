@@ -36,7 +36,7 @@
     "rimraf": "^3.0.2",
     "stream-transcoder": "^0.0.5",
     "superagent": "^3.6.3",
-    "webtorrent": "^0.98.19"
+    "webtorrent": "^1.8.22"
   },
   "devDependencies": {},
   "repository": {
