@@ -142,6 +142,14 @@ bencode@^1.0.0:
   dependencies:
     safe-buffer "^5.1.1"
 
+bencode@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/bencode/-/bencode-2.0.3.tgz#89b9c80ea1b8573554915a7d0c15f62b0aa7fc52"
+
+bep53-range@^1.1.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/bep53-range/-/bep53-range-1.1.1.tgz#20fd125b00a413254a77d42f63a43750ca7e64ac"
+
 binary-search@^1.2.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/binary-search/-/binary-search-1.3.2.tgz#88c9b7bd2b7221d352da78ec887f5af2549e4de2"
@@ -223,9 +231,9 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-blob-to-buffer@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/blob-to-buffer/-/blob-to-buffer-1.2.6.tgz#089ac264c686b73ead6c539a484a8003bfbb2033"
+blob-to-buffer@^1.2.6, blob-to-buffer@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/blob-to-buffer/-/blob-to-buffer-1.2.9.tgz#a17fd6c1c564011408f8971e451544245daaa84a"
 
 block-stream2@^1.0.0:
   version "1.1.0"
@@ -496,6 +504,12 @@ decompress-response@^3.3.0:
   dependencies:
     mimic-response "^1.0.0"
 
+decompress-response@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/decompress-response/-/decompress-response-6.0.0.tgz#ca387612ddb7e104bd16d85aab00d5ecf09c66fc"
+  dependencies:
+    mimic-response "^3.1.0"
+
 deep-extend@~0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.2.tgz#48b699c27e334bf89f10892be432f6e4c7d34a7f"
@@ -693,6 +707,10 @@ get-browser-rtc@^1.0.0:
 get-stdin@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-5.0.1.tgz#122e161591e21ff4c52530305693f20e6393a398"
+
+get-stdin@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-8.0.0.tgz#cbad6a73feb75f6eeb22ba9e01f89aa28aa97a53"
 
 getpass@^0.1.1:
   version "0.1.7"
@@ -1128,6 +1146,13 @@ magnet-uri@^5.1.3:
     uniq "^1.0.1"
     xtend "^4.0.0"
 
+magnet-uri@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/magnet-uri/-/magnet-uri-6.2.0.tgz#10f7be050bf23452df210838239b118463c3eeff"
+  dependencies:
+    bep53-range "^1.1.0"
+    thirty-two "^1.0.2"
+
 map-o@^2.0.1:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/map-o/-/map-o-2.0.8.tgz#9ae875a0477b92c0ae25b048284bc99c9757ae16"
@@ -1175,6 +1200,10 @@ mimic-fn@^1.0.0:
 mimic-response@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-1.0.0.tgz#df3d3652a73fded6b9b0b24146e6fd052353458e"
+
+mimic-response@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-3.1.0.tgz#2d1d59af9c1b129815accc2c46a022a5ce1fa3c9"
 
 minimatch@^3.0.4:
   version "3.0.4"
@@ -1342,7 +1371,19 @@ parse-torrent-file@^4.0.0:
     simple-sha1 "^2.0.0"
     uniq "^1.0.1"
 
-parse-torrent@^5.8.0, parse-torrent@^5.8.3:
+parse-torrent@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/parse-torrent/-/parse-torrent-10.0.2.tgz#5d6fee7de61b6a6b0118c927786c6235d0e387db"
+  dependencies:
+    bencode "^2.0.3"
+    blob-to-buffer "^1.2.9"
+    get-stdin "^8.0.0"
+    magnet-uri "^6.2.0"
+    queue-microtask "^1.2.3"
+    simple-get "^4.0.1"
+    simple-sha1 "^3.1.0"
+
+parse-torrent@^5.8.0:
   version "5.8.3"
   resolved "https://registry.yarnpkg.com/parse-torrent/-/parse-torrent-5.8.3.tgz#f95ef23301239609de406794ad9f958a1bca1b6c"
   dependencies:
@@ -1473,6 +1514,10 @@ q@^1.5.0:
 qs@^6.5.1, qs@~6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
+
+queue-microtask@^1.2.2, queue-microtask@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
 
 random-access-file@^1.0.1:
   version "1.8.1"
@@ -1631,6 +1676,10 @@ rusha@^0.8.1:
   version "0.8.6"
   resolved "https://registry.yarnpkg.com/rusha/-/rusha-0.8.6.tgz#b264ddaa4d49a1d67300061858ba9358c4adca14"
 
+rusha@^0.8.13:
+  version "0.8.14"
+  resolved "https://registry.yarnpkg.com/rusha/-/rusha-0.8.14.tgz#a977d0de9428406138b7bb90d3de5dcd024e2f68"
+
 rx-lite-aggregates@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/rx-lite-aggregates/-/rx-lite-aggregates-4.0.8.tgz#753b87a89a11c95467c4ac1626c4efc4e05c67be"
@@ -1695,6 +1744,14 @@ simple-get@^2.0.0, simple-get@^2.2.1:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
+simple-get@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/simple-get/-/simple-get-4.0.1.tgz#4a39db549287c979d352112fa03fd99fd6bc3543"
+  dependencies:
+    decompress-response "^6.0.0"
+    once "^1.3.1"
+    simple-concat "^1.0.0"
+
 simple-peer@^8.0.0:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/simple-peer/-/simple-peer-8.1.1.tgz#71c475ad9f10da2f22e045d4ec2a1d282046ba23"
@@ -1710,6 +1767,13 @@ simple-sha1@^2.0.0, simple-sha1@^2.0.8:
   resolved "https://registry.yarnpkg.com/simple-sha1/-/simple-sha1-2.1.0.tgz#9427bb96ff1263cc10a8414cedd51a18b919e8b3"
   dependencies:
     rusha "^0.8.1"
+
+simple-sha1@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/simple-sha1/-/simple-sha1-3.1.0.tgz#40cac8436dfaf9924332fc46a5c7bca45f656131"
+  dependencies:
+    queue-microtask "^1.2.2"
+    rusha "^0.8.13"
 
 simple-websocket@^5.0.0:
   version "5.0.2"
@@ -1898,7 +1962,7 @@ terminal-char-width@^1.0.0:
   dependencies:
     is-windows "^0.1.1"
 
-thirty-two@^1.0.1:
+thirty-two@^1.0.1, thirty-two@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/thirty-two/-/thirty-two-1.0.2.tgz#4ca2fffc02a51290d2744b9e3f557693ca6b627a"
 
